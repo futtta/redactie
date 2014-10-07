@@ -237,7 +237,7 @@ if((typeof(d.getElementsByClassName)==="function")&&(typeof(d.addEventListener)=
 
 <?php if ($nothomepage===false) { ?>
 var mm=window.matchMedia("(min-width: 700px)");
-function aniHead() {if((typeof(d.querySelectorAll)==="function")&&(mm.matches)){lazyLoadAllImages();var _headAnim=d.createElement('script');_headAnim.src="js/aniHead.js";_headAnim.type="text/javascript";var head=d.getElementsByTagName("head")[0];head.appendChild(_headAnim);}}
+function aniHead() {if((typeof(d.querySelectorAll)==="function")&&(mm.matches)){lazyLoadAllImages();var _headAnim=d.createElement('script');_headAnim.src="aniHead.js";_headAnim.type="text/javascript";var head=d.getElementsByTagName("head")[0];head.appendChild(_headAnim);}}
 <?php } ?>
 
 function showHideHighNav(){if(highNavVisible==true){d.getElementById("highNav").style.display="none";highNavVisible=false;}else{d.getElementById("highNav").style.display="block";highNavVisible=true;}return false;}
