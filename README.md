@@ -1,7 +1,7 @@
-redactie
-========
+futtta's redactie
+=================
 
-Alternatieve doe-het-zelf versie van m.deredactie.be
+Alternatieve doe-het-zelf versie van m.deredactie.be. Meer info [in deze blogpost](http://blog.futtta.be/2014/10/07/mijn-alternatief-voor-m-deredactie-be/)
 
 disclaimer
 ----------
