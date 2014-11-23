@@ -355,6 +355,7 @@ function fetchUrl($url) {
 }
 
 function niceDate($input) {
+	date_default_timezone_set("Europe/Brussels");
 	return strftime("%d/%m/%Y om %T",strtotime($input));
 	}
 
