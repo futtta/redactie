@@ -2,13 +2,18 @@
 // whose redactie is it, anyway?
 $owner="";
 
+// externe HTML/JS laden?
+$trustHTML=false;
+
+// geheime key om cache te kunnen legen
+$cacheSecret="12345";
+
 if ($_SERVER['HTTPS']) {
         $isSec="https://";
 } else {
 	$isSec="http://";
 }
 $baseUrl=$isSec.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
-$trustHTML=false;
 
 // http headers
 header("Cache-Control: max-age=60, must-revalidate");
@@ -28,8 +33,8 @@ $header="</head><body><div id=\"header\"><div id=\"toNav\"><a href=\"#nav\"><img
 // page footer
 $footer="<div id=\"boilerplate\">Dit is een continu evoluerende <a href=\"http://blog.futtta.be/2014/10/07/mijn-alternatief-voor-m-deredactie-be/\">\"proof of concept\"</a> van een mobile-first, progressive enhancete nieuws-website volgens <a href=\"http://responsivenews.co.uk/post/18948466399/cutting-the-mustard\">de \"cut the mustard\"-aanpak van de BBC</a>. Alle content is en blijft &copy; VRT Nieuwsdienst, wiens <a href=\"http://blog.futtta.be/2014/05/12/nieuwe-m-deredactie-be-niet-meer-mobiel/\">mobiele website echter niet meer echt mobiel is</a>.</div>";
 
-// get/set menu (and remove from cache if nocache in QS
-if ($_GET["nocache"]) {apc_delete("menu");}
+// get/set menu (and remove from cache if nocache in QS)
+if (($_GET["nocache"]) && ($_GET["secret"]===$cacheSecret)) {apc_delete("menu");}
 
 $menu=apc_fetch("menu");
 if ($menu===false) {
@@ -84,7 +89,8 @@ if ($_GET["url"]){
         }
 }
 
-if ($_GET["nocache"]) {apc_delete(md5($url));}
+// deze pagina uit cache verwijderen?
+if ($_GET["nocache"] && $_GET["secret"]===$cacheSecret) {apc_delete(md5($url));}
 
 // fetch content from cache or vrt
 $htmlCache=apc_fetch(md5($url));
