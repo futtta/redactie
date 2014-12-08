@@ -294,14 +294,14 @@ function getAbstractFromContentBundle($bundlecontent,$showImage=true){
 				$title="<h2 class=\"title\"><a href=\"".$detailID."\">".$content["title"]."</a></h2>";
 				$text="<p>".strip_tags($content["abstract"])." <em>(".niceDate($bundlecontent["publicationDate"]).").</em></p>";
 			} else if ($content["format"]==="quote") {
-				$title="";
+				$title="<h2 class=\"title\"></h2>";
 				$text="<div class=\"qwrap\"><blockquote>".strip_tags($content["abstract"])."<br/><em>(".$content["source"]." ".niceDate($bundlecontent["publicationDate"]).").</em></blockquote></div>";
 			} else if ($content["format"]==="twitter") {
-				$title="";
+				$title="<h2 class=\"title\"></h2>";
 				$text="<div class=\"qwrap\"><blockquote class=\"twitter\">".strip_tags($content["abstract"])."<br/><em>(".$content["source"]." via Twitter, ".niceDate($bundlecontent["publicationDate"]).").</em></blockquote></div>";
 			}
 		} else if ($content["type"]==="HtmlSnippet") {
-			$title="";
+			$title="<h2 class=\"title\"></h2>";
 			if ($trustHTML!==true) {
 				$htmlSnippet=cleanHTML($content["html"]);
 			} else {
