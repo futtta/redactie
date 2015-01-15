@@ -3,7 +3,7 @@
 $owner="";
 
 // externe HTML/JS toelaten (facebook, twitter, instagram)
-$trustHTML=false;
+$trustHTML=true;
 
 // geheime key om cache te kunnen legen
 $cacheSecret="314159";
