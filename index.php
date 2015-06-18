@@ -170,7 +170,9 @@ if ($notCached==true) {
 						if ($imageUrl=getImageFromContentBundle($contentItem)) {
 							$htmlOut.="<img src=\"".$imageUrl."\" alt=\"\">";
 						}
-					}
+					} else if (($contentItem["format"]==="video") && (!empty($permalink))) {
+                                                $htmlOut.="<div id=\"origin\"><a href=\"".$permalink."\">Bekijk de video op deredactie.be</a>";
+                                        }
 				}
 			}
 			$htmlOut.="<div class=\"lyteShare twitter googleplus facebook\" style=\"height:35px;padding:20px 0px;\"></div>";
