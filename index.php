@@ -8,7 +8,7 @@ $trustHTML=true;
 // geheime key om cache te kunnen legen
 $cacheSecret="314159";
 
-if ($_SERVER['HTTPS']) {
+if (isset($_SERVER['HTTPS'])) {
 	$isSec="https://";
 } else {
 	$isSec="http://";
@@ -34,14 +34,22 @@ $header="</head><body><div id=\"header\"><div id=\"toNav\"><a href=\"#nav\"><img
 $footer="<div id=\"boilerplate\">Dit is een continu evoluerende <a href=\"http://blog.futtta.be/2014/10/07/mijn-alternatief-voor-m-deredactie-be/\">\"proof of concept\"</a> van een mobile-first, progressive enhancete nieuws-website volgens <a href=\"http://responsivenews.co.uk/post/18948466399/cutting-the-mustard\">de \"cut the mustard\"-aanpak van de BBC</a>. Alle content is en blijft &copy; VRT Nieuwsdienst, wiens <a href=\"http://blog.futtta.be/2014/05/12/nieuwe-m-deredactie-be-niet-meer-mobiel/\">mobiele website echter niet meer echt mobiel is</a>. Je vindt <a href=\"https://github.com/futtta/redactie\" title=\"vork deze redactie op github!\">de code van deze proof of concept op Github</a>.</div>";
 
 // get/set menu (and remove from cache if nocache in QS
-if (($_GET["nocache"]) && ($_GET["secret"]===$cacheSecret)) {apc_delete("menu");}
+if ((isset($_GET["nocache"])) && ($_GET["secret"]===$cacheSecret)) {apc_delete("menu");}
 
-$menu=apc_fetch("menu");
-if ($menu===false) {
+if (function_exists("apc_fetch")) {
+    $menu=apc_fetch("menu");
+    $apc=true;
+} else {
+    $apc=false;
+}
+
+if (empty($menu)) {
 	$menuIn=fetchUrl("http://m.deredactie.be/client/mvc/config/vrtnieuws");	
 	$menuArr=json_decode($menuIn,true);
 
-	$menu="<div class=\"footer\"><div class=\"nav nojs\" id=\"nav\"><ul><li class=\"catHeader\">Categorie&euml;n<ul><li class=\"menuItem\"><a href=\"".$baseUl."\">Hoofdpunten</a></li><li class=\"menuItem\"><a href=\"/".$baseUrl."/#nieuwsstroom\">Laatste Nieuws</a></li>";
+	$menu="<div class=\"footer\"><div class=\"nav nojs\" id=\"nav\"><ul><li class=\"catHeader\">Categorie&euml;n<ul><li class=\"menuItem\"><a href=\"".$baseUrl."\">Hoofdpunten</a></li><li class=\"menuItem\"><a href=\"/".$baseUrl."/#nieuwsstroom\">Laatste Nieuws</a></li>";
+    $newMenu="";
+    
 	if (is_array($menuArr)){
   		foreach($menuArr["clientConfiguration"]["navigationItems"] as $menuItem) {
 			if ($menuItem["new"]!==true) {
@@ -54,7 +62,7 @@ if ($menu===false) {
 	}
 	$menu.="</ul></li></ul></div></div>";
 
-	if (is_array($menuArr)){
+	if (is_array($menuArr)&&($apc)){
 		apc_store("menu",$menu,3600);
 	}
 }
@@ -73,24 +81,25 @@ http://m.deredactie.be/client/mvc/contents/ContentBundle/537dea120cf2e2e365c098a
 $url="http://m.deredactie.be/client/mvc/contents?channel=vrtnieuws";
 
 // if channel=sporza (and if no url in querystring)
-if ($_GET["channel"]){
+if (isset($_GET["channel"])){
         if ($_GET["channel"]==="sporza") {
                 $url="http://m.deredactie.be/client/mvc/contents?channel=sporza";
         }
 }
 
 // if deredactie-url in querystring -> detail/ category
-if ($_GET["url"]){
+if (isset($_GET["url"]) ){
         if (strpos($url,"http://m.deredactie.be/")===0) {
                 $url=$_GET["url"];
                 $header="</head><body><div id=\"header\"><div id=\"back\"><a href=\"".$baseUrl."\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABjUExURQAAAFlZWdLS0vv7+2RkZGBgYFFRUWBgYG1tbU9PT/Ly8paWlrm5ubq6uvT09Nra2vv7++Li4vb29ubm5vj4+O3t7aysrNra2ubm5t7e3uvr6+jo6NPT09LS0qampv////39/RrtdJoAAAAfdFJOUwAhPfsUByoNAxvjHC9lxxvOjfvF6YwOaK+nbN5PiWAdGQGYAAABP0lEQVQ4y3VT27KDIAyMyCVRqlVbL60W/v8rG/SMR6lkhqfd2Ww2ASBRhjIAYVOwZBRurbtdokoSQvl8OHdFQCQCrCfvQg0/OGUIMBe52+oVGVPc2g6F22s54ZqfPaBc08E3GVBN4d0lQZEEqJsIdXklNlizMV3lEdw29aYtDcBQRaiveAAj2Rb77ps2QvNnCUiSVgXxo90JxW2N+jN4P6OPsQRlNP3PdyIUc8gjO8VzIISpqKQo/QOBd4dh5CQh7yyg0vpMOIXv7y9OR4dg9+riiDqL3Olg1P7kVHBOSmYbhyQHsjx8LCN6luENs2/FVLRTHscdhsb9Sg3I19tdtNqvbT2nd7yW41Wb8BfqpU0SuCGZ9TR8ihBkMqaUo08SWCZw+nnc3HwS/9YgyClk80n8XSVLhF68nYBkrYZFDV8jZjMiVAPoNAAAAABJRU5ErkJggg==\" alt=\"back\" width=\"32\" height=\"32\"/></a></div><div id=\"logo\"><a href=\"".$baseUrl."\">".$owner."'s</a><hr><span id=\"redactie\"><a href=\"".$baseUrl."\">redactie.be</a></span></div><div id=\"catTitle\"><span id=\"titleText\"></span></div></div><div id=\"content\">";
         }
 }
 
-if ($_GET["nocache"] && $_GET["secret"]===$cacheSecret) {apc_delete(md5($url));}
+if (isset($_GET["nocache"]) && $_GET["secret"]===$cacheSecret) {apc_delete(md5($url));}
 
 // fetch content from cache or vrt
-$htmlCache=apc_fetch(md5($url));
+if ($apc) $htmlCache=apc_fetch(md5($url));
+
 if (!empty($htmlCache)) {
 	$htmlCache=json_decode(gzuncompress($htmlCache),true);
 	if (!empty($htmlCache["html"])) {
@@ -203,7 +212,8 @@ if ($notCached==true) {
 	$htmlCache["catTitle"]=$catTitle;
 	$htmlCache["thisPage"]=$thisPage;
 
-	$result=apc_store(md5($url),gzcompress(json_encode($htmlCache)),300);
+    if ($apc) $result=apc_store(md5($url),gzcompress(json_encode($htmlCache)),300);
+
 	} else {
 		$htmlOut="Oeps! Klein probleem, probeer je zodadelijk nog eens?";
 	}
@@ -288,7 +298,7 @@ function getImageFromContentBundle($bundlecontent){
 }
 
 function getAbstractFromContentBundle($bundlecontent,$showImage=true){
-	global $trustHTML;
+	global $trustHTML, $baseUrl;
 	$detailID=$baseUrl."?url=http://m.deredactie.be/client/mvc/contents/ContentBundle/".$bundlecontent["id"];
 	foreach ($bundlecontent["content"] as $content) {
 		if ($content["type"]==="TextSnippet"){
