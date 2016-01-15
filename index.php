@@ -380,20 +380,25 @@ function removeCallback($contentstring) {
 
 function fetchUrl($url) {
 	if (strpos($url,"http://m.deredactie.be/")===0) {
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-		$str = curl_exec($curl);
-		$err = curl_error($curl);
-		curl_close($curl);
-		if (!$err) {
-			return $str;
-		} else {
-			echo $err;
-			return false;
-		}
+        if (function_exists("curl_init")) {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+            $str = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if (!$err) {
+                return $str;
+            } else {
+                echo $err;
+                return false;
+            }
+        } else {
+            $resp=file_get_contents($url);
+            return $resp;
+        }
 	} else {
 		return false;
 	}
