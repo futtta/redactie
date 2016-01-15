@@ -48,7 +48,7 @@ $header="</head><body class=\"".$channelName."\"><div id=\"header\"><div id=\"to
 $footer="<div id=\"boilerplate\">Dit is een continu evoluerende <a href=\"http://blog.futtta.be/2014/10/07/mijn-alternatief-voor-m-deredactie-be/\">\"proof of concept\"</a> van een mobile-first, progressive enhancete nieuws-website volgens <a href=\"http://responsivenews.co.uk/post/18948466399/cutting-the-mustard\">de \"cut the mustard\"-aanpak van de BBC</a>. Alle content is en blijft &copy; VRT Nieuwsdienst, wiens <a href=\"http://blog.futtta.be/2014/05/12/nieuwe-m-deredactie-be-niet-meer-mobiel/\">mobiele website echter niet meer echt mobiel is</a>. Je vindt <a href=\"https://github.com/futtta/redactie\" title=\"vork deze redactie op github!\">de code van deze proof of concept op Github</a>.</div>";
 
 // get/set menu (and remove from cache if nocache in QS
-if ((isset($_GET["nocache"])) && ($_GET["secret"]===$cacheSecret)) {cache_delete($channelName."-menu");
+if ((isset($_GET["nocache"])) && ($_GET["secret"]===$cacheSecret)) {cache_delete($channelName."-menu");};
 
 $menu=cache_fetch($channelName."-menu");
 
