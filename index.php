@@ -127,7 +127,7 @@ if (!empty($htmlCache)) {
 
 if ($notCached==true) {
 	$contentstring=fetchUrl($url);
-	$contentarr=json_decode(removeCallback($contentstring),true);
+	$contentarr=json_decode($contentstring,true);
 	$permalink="";
 	$catTitle="";
     $htmlOut="";
