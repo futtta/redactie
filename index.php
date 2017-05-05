@@ -15,6 +15,7 @@ if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
 }
 
 $baseUrl=$isSec.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+$baseAPI="http://csclient.vrt.be/client/";
 
 // http headers
 header("Cache-Control: max-age=60, must-revalidate");
@@ -27,11 +28,11 @@ if (empty($owner)) {
 
 // if channel=sporza (and if no url in querystring)
 $channelName="redactie";
-$url="http://m.deredactie.be/client/mvc/contents?channel=vrtnieuws";
+$url=$baseAPI."mvc/contents?channel=vrtnieuws";
 
 if (isset($_GET["channel"])){
     if ($_GET["channel"]==="sporza") {
-        $url="http://m.deredactie.be/client/mvc/contents?channel=sporza";
+        $url=$baseAPI."mvc/contents?channel=sporza";
         $channelName="sporza";
     }
 }
@@ -54,9 +55,9 @@ $menu=cache_fetch($channelName."-menu");
 
 if (empty($menu)) {
     if ($channelName==="sporza") {
-        $menuIn=fetchUrl("http://m.deredactie.be/client/mvc/config/sporza");
+        $menuIn=fetchUrl($baseAPI."mvc/config/sporza");
     } else {
-        $menuIn=fetchUrl("http://m.deredactie.be/client/mvc/config/vrtnieuws");
+        $menuIn=fetchUrl($baseAPI."mvc/config/vrtnieuws");
     }
     $menuArr=json_decode($menuIn,true);
 
@@ -73,9 +74,9 @@ if (empty($menu)) {
 	if (is_array($menuArr)){
   		foreach($menuArr["clientConfiguration"]["navigationItems"] as $menuItem) {
 			if ($menuItem["new"]!==true) {
-				$menu.="<li class=\"menuItem\"><a href=\"?channel=".$channelName."&url=http://m.deredactie.be/client/mvc/detail/StoryBundle/".$menuItem["referralId"]."\">".$menuItem["label"]."</a></li>";
+				$menu.="<li class=\"menuItem\"><a href=\"?channel=".$channelName."&url=".$baseAPI."mvc/detail/StoryBundle/".$menuItem["referralId"]."\">".$menuItem["label"]."</a></li>";
 			} else {
-				$newMenu.="<li class=\"menuItem new\"><a href=\"?channel=".$channelName."&url=http://m.deredactie.be/client/mvc/detail/StoryBundle/".$menuItem["referralId"]."\">".$menuItem["label"]."</a></li>";
+				$newMenu.="<li class=\"menuItem new\"><a href=\"?channel=".$channelName."&url=".$baseAPI."mvc/detail/StoryBundle/".$menuItem["referralId"]."\">".$menuItem["label"]."</a></li>";
 			}
   		}
   	$menu.=$newMenu;
@@ -99,7 +100,7 @@ http://m.deredactie.be/client/mvc/contents/ContentBundle/537dea120cf2e2e365c098a
 
 // if deredactie-url in querystring -> detail/ category
 if (isset($_GET["url"]) ){
-        if (strpos($url,"http://m.deredactie.be/")===0) {
+        if (strpos($url,$baseAPI)===0) {
                 $url=$_GET["url"];
                 $header="</head><body class=\"".$channelName."\"><div id=\"header\"><div id=\"back\"><a href=\"".$baseUrl."\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABjUExURQAAAFlZWdLS0vv7+2RkZGBgYFFRUWBgYG1tbU9PT/Ly8paWlrm5ubq6uvT09Nra2vv7++Li4vb29ubm5vj4+O3t7aysrNra2ubm5t7e3uvr6+jo6NPT09LS0qampv////39/RrtdJoAAAAfdFJOUwAhPfsUByoNAxvjHC9lxxvOjfvF6YwOaK+nbN5PiWAdGQGYAAABP0lEQVQ4y3VT27KDIAyMyCVRqlVbL60W/v8rG/SMR6lkhqfd2Ww2ASBRhjIAYVOwZBRurbtdokoSQvl8OHdFQCQCrCfvQg0/OGUIMBe52+oVGVPc2g6F22s54ZqfPaBc08E3GVBN4d0lQZEEqJsIdXklNlizMV3lEdw29aYtDcBQRaiveAAj2Rb77ps2QvNnCUiSVgXxo90JxW2N+jN4P6OPsQRlNP3PdyIUc8gjO8VzIISpqKQo/QOBd4dh5CQh7yyg0vpMOIXv7y9OR4dg9+riiDqL3Olg1P7kVHBOSmYbhyQHsjx8LCN6luENs2/FVLRTHscdhsb9Sg3I19tdtNqvbT2nd7yW41Wb8BfqpU0SuCGZ9TR8ihBkMqaUo08SWCZw+nnc3HwS/9YgyClk80n8XSVLhF68nYBkrYZFDV8jZjMiVAPoNAAAAABJRU5ErkJggg==\" alt=\"back\" width=\"32\" height=\"32\"/></a></div><div id=\"logo\"><a href=\"".$baseUrl."\">".$owner."'s</a><hr><span id=\"redactie\"><a href=\"".$baseUrl."\">".$channelName."</a></span></div><div id=\"catTitle\"><span id=\"titleText\"></span></div></div><div id=\"content\">";
         }
@@ -313,8 +314,8 @@ function getImageFromContentBundle($bundlecontent){
 }
 
 function getAbstractFromContentBundle($bundlecontent,$showImage=true){
-	global $trustHTML, $baseUrl;
-	$detailID=$baseUrl."&url=http://m.deredactie.be/client/mvc/contents/ContentBundle/".$bundlecontent["id"];
+	global $trustHTML, $baseUrl, $baseAPI;
+	$detailID=$baseUrl."&url=".$baseAPI."mvc/contents/ContentBundle/".$bundlecontent["id"];
 	foreach ($bundlecontent["content"] as $content) {
 		if ($content["type"]==="TextSnippet"){
 			if (!empty($content["title"])) {
@@ -379,13 +380,16 @@ function removeCallback($contentstring) {
 }
 
 function fetchUrl($url) {
-	if (strpos($url,"http://m.deredactie.be/")===0) {
+    global $baseAPI;
+	if (strpos($url,$baseAPI)===0) {
         if (function_exists("curl_init")) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($curl, CURLOPT_PROXY, "localhost:6789");
+            curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
             $str = curl_exec($curl);
             $err = curl_error($curl);
             curl_close($curl);
